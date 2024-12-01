@@ -32,7 +32,7 @@ export function Navbar() {
       <Flex className={styles['social']}>
         <SocialButton
           Icon={BsDiscord}
-          link="https://discord.gg/"
+          link="https://discord.gg/gatitos2"
           scheme="teal"
         />
         <SocialButton

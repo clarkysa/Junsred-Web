@@ -16,7 +16,7 @@ export default function Layout({ children }: PropsWithChildren) {
 
       <Flex justifyContent={'space-between'} gap={'20px'}>
         <Box width={'70%'}>
-          <Frame size="large" title={`📁 C:/SAMMWY${pathname.toUpperCase()}`}>
+          <Frame size="large" title={`📁 C:/JUNSRED${pathname.toUpperCase()}`}>
             {children}
           </Frame>
         </Box>

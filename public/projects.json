@@ -4,7 +4,7 @@
       "name": "OpenFL",
       "description": "The Open Flash Library for creative expression on the web, desktop, mobile and consoles.",
       "categories": ["Haxe", "JavaScript"],
-      "thumbnail": "https://github.com/junsred/openfl/blob/develop/assets/openfl.png",
+      "thumbnail": "https://github.com/junsred/openfl/blob/develop/assets/openfl.png?raw=true",
       "link": "https://github.com/junsred/openfl"
     }
   ]

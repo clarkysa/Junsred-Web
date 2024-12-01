@@ -20,7 +20,7 @@ export default function PresentationCard() {
             </Box>
         </Box>
         <Box marginLeft={"20px"}>
-            <Heading size={"xl"}>Sammwy</Heading>
+            <Heading size={"xl"}>Junsred</Heading>
             <Text>⚛️ React frontend dev, backend on NestJS.</Text>
             <Text>☕ Java and Minecraft dev with 4 years of experience.</Text>
             <Text>💖 Coding twitch stuff for streamers.</Text>

@@ -37,7 +37,7 @@ export function Navbar() {
         />
         <SocialButton
           Icon={BsGithub}
-          link="https://github.com/junsrxd"
+          link="https://github.com/junsred"
           scheme="gray"
         />
         {/* <SocialButton Icon={BsLinkedin} link="https://twitter.com/sammwy" scheme="linkedin" /> */}

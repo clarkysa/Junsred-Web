@@ -37,7 +37,7 @@ export default function Sidebar() {
           as={'a'}
           margin={'10px 0'}
           colorScheme={'red'}
-          href={'https://patreon.com/sammwy'}
+          href={'https://patreon.com/junsred'}
           target={'_blank'}
           referrerPolicy={'no-referrer'}
         >

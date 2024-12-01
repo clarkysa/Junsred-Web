@@ -32,28 +32,28 @@ export function Navbar() {
       <Flex className={styles['social']}>
         <SocialButton
           Icon={BsDiscord}
-          link="https://discord.gg/sKVYznRe4w"
+          link="https://discord.gg/"
           scheme="teal"
         />
         <SocialButton
           Icon={BsGithub}
-          link="https://github.com/sammwyy"
+          link="https://github.com/eljunsred"
           scheme="gray"
         />
         {/* <SocialButton Icon={BsLinkedin} link="https://twitter.com/sammwy" scheme="linkedin" /> */}
         <SocialButton
           Icon={BsTwitch}
-          link="https://twitch.tv/sammwy"
+          link="https://twitch.tv/junsosu"
           scheme="purple"
         />
         <SocialButton
           Icon={BsTwitter}
-          link="https://twitter.com/sammwy"
+          link="https://twitter.com/"
           scheme="twitter"
         />
         <SocialButton
           Icon={BsYoutube}
-          link="https://youtube.com/c/sammwy"
+          link="https://youtube.com/c/DracoGhoul"
           scheme="red"
         />
       </Flex>

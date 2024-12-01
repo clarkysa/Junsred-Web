@@ -13,7 +13,7 @@ export default function PresentationCard() {
         <Flex>
         <Box>
             <Box>
-                <Avatar size="2xl" src="https://avatars.githubusercontent.com/u/44925968?v=4" />
+                <Avatar size="2xl" src="https://avatars.githubusercontent.com/u/63877982?v=4" />
             </Box>
             <Box textAlign={"center"}>
                 <Badge colorScheme={"pink"}>Available to Hire</Badge>

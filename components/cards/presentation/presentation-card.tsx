@@ -21,7 +21,7 @@ export default function PresentationCard() {
         <Box>
           <Avatar
             size="2xl"
-            src="https://avatars.githubusercontent.com/u/44925968?v=4"
+            src="https://avatars.githubusercontent.com/u/63877982?v=4"
           />
         </Box>
         <Box textAlign={'center'}>

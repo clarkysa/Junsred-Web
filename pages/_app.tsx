@@ -18,7 +18,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>⋆｡ﾟ☁︎｡⋆｡ ﾟ☾ ﾟ｡⋆</title>
         <meta
           name="description"
-          content="Hi, i'm Sammwy! Welcome to my personal website. Take a look at my list of open-source projects.e"
+          content="Hi, i'm Junsred! Welcome to my personal website. Take a look at my list of open-source projects.e"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/icon@32.png" />

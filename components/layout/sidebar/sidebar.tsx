@@ -21,8 +21,8 @@ export default function Sidebar() {
   return (
     <Flex className={styles['sidebar']}>
       <Frame title="🌱 About me">
-        <AboutMeSection label={'Age'} value={'22'} />
-        <AboutMeSection label={'Birthday'} value={'Nov, 23'} />
+        <AboutMeSection label={'Age'} value={'20'} />
+        <AboutMeSection label={'Birthday'} value={'Sep, 18'} />
         <AboutMeSection label={'Country'} value={'Argentina'} />
         <AboutMeSection label={'State'} value={'Buenos Aires'} />
       </Frame>

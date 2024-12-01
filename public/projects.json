@@ -7,7 +7,7 @@
       "thumbnail": "https://github.com/junsred/openfl/blob/develop/assets/openfl.png?raw=true",
       "link": "https://github.com/junsred/openfl"
     },
-{
+    {
       "name": "openfl-animate-atlas",
       "description": "Tilemap and sprite supported animate atlas player for OpenFL",
       "categories": ["Haxe"],

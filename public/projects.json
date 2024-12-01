@@ -8,8 +8,6 @@
       "link": "https://github.com/junsred/openfl"
     },
 {
-  "projects": [
-    {
       "name": "openfl-animate-atlas",
       "description": "Tilemap and sprite supported animate atlas player for OpenFL",
       "categories": ["Haxe"],

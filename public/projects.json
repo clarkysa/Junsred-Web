@@ -14,5 +14,26 @@
       "thumbnail": "https://github.com/junsred/openfl/blob/develop/assets/openfl.png?raw=true",
       "link": "https://github.com/junsred/openfl-animate-atlas?tab=readme-ov-file"
     }
+    {
+      "name": "lime",
+      "description": "A foundational Haxe framework for cross-platform development",
+      "categories": ["JavaScript", "Haxe", "C++"],
+      "thumbnail": "https://lime.software/img/logonav.png",
+      "link": "https://github.com/junsred/lime"
+    }
+    {
+      "name": "Hekate",
+      "description": "hekate - A GUI based Nintendo Switch Bootloader",
+      "categories": ["C", "C++"],
+      "thumbnail": "https://user-images.githubusercontent.com/3665130/60391760-bc1e8c00-9afe-11e9-8b7a-b065873081b2.png",
+      "link": "https://github.com/junsred/hekate"
+    }
+    {
+      "name": "Pagination",
+      "description": "Simple, fast and safe pagination tool for go.",
+      "categories": ["Go"],
+      "thumbnail": "https://philna.sh/_astro/astro-pagination.Bl8a0G_v_ZMEYht.webp",
+      "link": "https://github.com/junsred/pagination"
+    }
   ]
 }

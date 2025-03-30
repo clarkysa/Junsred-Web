@@ -1,14 +1,46 @@
-import { Box, Flex, Text, IconButton, Slider, SliderTrack, SliderFilledTrack, SliderThumb, HStack, VStack, useColorModeValue, Image, Badge, Tooltip, useDisclosure, Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody, DrawerCloseButton } from '@chakra-ui/react';
-import { useEffect, useRef, useState } from 'react';
-import { BsFillPlayFill, BsFillPauseFill, BsVolumeUp, BsVolumeMute, BsSkipBackwardFill, BsSkipForwardFill, BsMusicNoteList } from 'react-icons/bs';
+"use client"
+
+import {
+  Box,
+  Flex,
+  Text,
+  IconButton,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  HStack,
+  VStack,
+  useColorModeValue,
+  Image,
+  Badge,
+  Tooltip,
+  useDisclosure,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerHeader,
+  DrawerBody,
+  DrawerCloseButton,
+} from "@chakra-ui/react"
+import { useEffect, useRef, useState } from "react"
+import {
+  BsFillPlayFill,
+  BsFillPauseFill,
+  BsVolumeUp,
+  BsVolumeMute,
+  BsSkipBackwardFill,
+  BsSkipForwardFill,
+  BsMusicNoteList,
+} from "react-icons/bs"
 
 // Define the track interface
 interface Track {
-  id: number;
-  title: string;
-  artist: string;
-  src: string;
-  cover: string;
+  id: number
+  title: string
+  artist: string
+  src: string
+  cover: string
 }
 
 // Sample tracks - replace with your actual tracks
@@ -18,245 +50,245 @@ const tracks: Track[] = [
     title: "Chill Vibes",
     artist: "LoFi Producer",
     src: "/music/track1.mp3",
-    cover: "/music/covers/track1.jpg"
+    cover: "/music/covers/track1.jpg",
   },
   {
     id: 2,
     title: "Coding Session",
     artist: "Dev Beats",
     src: "/music/track2.mp3",
-    cover: "/music/covers/track2.jpg"
+    cover: "/music/covers/track2.jpg",
   },
   {
     id: 3,
     title: "Late Night",
     artist: "Ambient Dreams",
     src: "/music/track3.mp3",
-    cover: "/music/covers/track3.jpg"
+    cover: "/music/covers/track3.jpg",
   },
   {
     id: 4,
     title: "Synthwave",
     artist: "Retro Future",
     src: "/music/track4.mp3",
-    cover: "/music/covers/track4.jpg"
+    cover: "/music/covers/track4.jpg",
   },
   {
     id: 5,
     title: "Rainy Day",
     artist: "Melancholy",
     src: "/music/track5.mp3",
-    cover: "/music/covers/track5.jpg"
+    cover: "/music/covers/track5.jpg",
   },
   {
     id: 6,
     title: "Morning Coffee",
     artist: "Acoustic Feels",
     src: "/music/track6.mp3",
-    cover: "/music/covers/track6.jpg"
-  }
-];
+    cover: "/music/covers/track6.jpg",
+  },
+]
 
 export function MusicPlayer() {
-  const [currentTrack, setCurrentTrack] = useState<Track>(tracks[0]);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [volume, setVolume] = useState(0.7);
-  const [isMuted, setIsMuted] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  
+  const [currentTrack, setCurrentTrack] = useState<Track>(tracks[0])
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [duration, setDuration] = useState(0)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [volume, setVolume] = useState(0.7)
+  const [isMuted, setIsMuted] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
   // Semi-transparent background
-  const bgColor = useColorModeValue('rgba(255, 255, 255, 0.7)', 'rgba(26, 32, 44, 0.7)');
-  const accentColor = useColorModeValue('purple.500', 'purple.300');
-  const textColor = useColorModeValue('gray.800', 'white');
-  const borderColor = useColorModeValue('rgba(226, 232, 240, 0.5)', 'rgba(74, 85, 104, 0.5)');
-  
+  const bgColor = useColorModeValue("rgba(255, 255, 255, 0.7)", "rgba(26, 32, 44, 0.7)")
+  const accentColor = useColorModeValue("purple.500", "purple.300")
+  const textColor = useColorModeValue("gray.800", "white")
+  const borderColor = useColorModeValue("rgba(226, 232, 240, 0.5)", "rgba(74, 85, 104, 0.5)")
+
   // Canvas ref for visualizer
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const animationRef = useRef<number | null>(null);
-  const analyzerRef = useRef<AnalyserNode | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const animationRef = useRef<number | null>(null)
+  const analyzerRef = useRef<AnalyserNode | null>(null)
+  const audioContextRef = useRef<AudioContext | null>(null)
+  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null)
 
   // Initialize audio on component mount
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.volume = volume;
-      
+      audioRef.current.volume = volume
+
       // Setup audio context for visualizer
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      audioContextRef.current = audioContext;
-      
-      const analyzer = audioContext.createAnalyser();
-      analyzer.fftSize = 256;
-      analyzerRef.current = analyzer;
-      
-      const source = audioContext.createMediaElementSource(audioRef.current);
-      source.connect(analyzer);
-      analyzer.connect(audioContext.destination);
-      sourceRef.current = source;
-      
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      audioContextRef.current = audioContext
+
+      const analyzer = audioContext.createAnalyser()
+      analyzer.fftSize = 256
+      analyzerRef.current = analyzer
+
+      const source = audioContext.createMediaElementSource(audioRef.current)
+      source.connect(analyzer)
+      analyzer.connect(audioContext.destination)
+      sourceRef.current = source
+
       // Start visualizer
       if (canvasRef.current) {
-        startVisualizer();
+        startVisualizer()
       }
     }
-    
+
     return () => {
       if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
+        cancelAnimationFrame(animationRef.current)
       }
       if (audioContextRef.current) {
-        audioContextRef.current.close();
+        audioContextRef.current.close()
       }
-    };
-  }, []);
+    }
+  }, [])
 
   // Update audio element when track changes
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
-        audioRef.current.play();
+        audioRef.current.play()
       }
     }
-  }, [currentTrack]);
+  }, [currentTrack])
 
   // Format time in MM:SS
   const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-  };
+    const minutes = Math.floor(time / 60)
+    const seconds = Math.floor(time % 60)
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
+  }
 
   // Handle play/pause
   const togglePlay = () => {
     if (audioRef.current) {
       if (isPlaying) {
-        audioRef.current.pause();
+        audioRef.current.pause()
       } else {
-        audioRef.current.play();
+        audioRef.current.play()
       }
-      setIsPlaying(!isPlaying);
+      setIsPlaying(!isPlaying)
     }
-  };
+  }
 
   // Handle track change
-  const changeTrack = (direction: 'next' | 'prev') => {
-    const currentIndex = tracks.findIndex(track => track.id === currentTrack.id);
-    let newIndex;
-    
-    if (direction === 'next') {
-      newIndex = (currentIndex + 1) % tracks.length;
+  const changeTrack = (direction: "next" | "prev") => {
+    const currentIndex = tracks.findIndex((track) => track.id === currentTrack.id)
+    let newIndex
+
+    if (direction === "next") {
+      newIndex = (currentIndex + 1) % tracks.length
     } else {
-      newIndex = (currentIndex - 1 + tracks.length) % tracks.length;
+      newIndex = (currentIndex - 1 + tracks.length) % tracks.length
     }
-    
-    setCurrentTrack(tracks[newIndex]);
-  };
+
+    setCurrentTrack(tracks[newIndex])
+  }
 
   // Handle volume change
   const handleVolumeChange = (newVolume: number) => {
     if (audioRef.current) {
-      audioRef.current.volume = newVolume;
-      setVolume(newVolume);
+      audioRef.current.volume = newVolume
+      setVolume(newVolume)
       if (newVolume === 0) {
-        setIsMuted(true);
+        setIsMuted(true)
       } else {
-        setIsMuted(false);
+        setIsMuted(false)
       }
     }
-  };
+  }
 
   // Handle mute toggle
   const toggleMute = () => {
     if (audioRef.current) {
       if (isMuted) {
-        audioRef.current.volume = volume;
-        setIsMuted(false);
+        audioRef.current.volume = volume
+        setIsMuted(false)
       } else {
-        audioRef.current.volume = 0;
-        setIsMuted(true);
+        audioRef.current.volume = 0
+        setIsMuted(true)
       }
     }
-  };
+  }
 
   // Handle time update
   const handleTimeUpdate = () => {
     if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime);
-      setDuration(audioRef.current.duration);
+      setCurrentTime(audioRef.current.currentTime)
+      setDuration(audioRef.current.duration)
     }
-  };
+  }
 
   // Handle seeking
   const handleSeek = (newTime: number) => {
     if (audioRef.current) {
-      audioRef.current.currentTime = newTime;
-      setCurrentTime(newTime);
+      audioRef.current.currentTime = newTime
+      setCurrentTime(newTime)
     }
-  };
+  }
 
   // Handle track end
   const handleTrackEnd = () => {
-    changeTrack('next');
-  };
+    changeTrack("next")
+  }
 
   // Visualizer function
   const startVisualizer = () => {
-    if (!canvasRef.current || !analyzerRef.current) return;
-    
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    
-    const analyzer = analyzerRef.current;
-    const bufferLength = analyzer.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
-    
-    const width = canvas.width;
-    const height = canvas.height;
-    
+    if (!canvasRef.current || !analyzerRef.current) return
+
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    const analyzer = analyzerRef.current
+    const bufferLength = analyzer.frequencyBinCount
+    const dataArray = new Uint8Array(bufferLength)
+
+    const width = canvas.width
+    const height = canvas.height
+
     const renderFrame = () => {
-      animationRef.current = requestAnimationFrame(renderFrame);
-      
-      analyzer.getByteFrequencyData(dataArray);
-      
-      ctx.clearRect(0, 0, width, height);
-      
-      const barWidth = (width / bufferLength) * 2.5;
-      let x = 0;
-      
+      animationRef.current = requestAnimationFrame(renderFrame)
+
+      analyzer.getByteFrequencyData(dataArray)
+
+      ctx.clearRect(0, 0, width, height)
+
+      const barWidth = (width / bufferLength) * 2.5
+      let x = 0
+
       for (let i = 0; i < bufferLength; i++) {
-        const barHeight = (dataArray[i] / 255) * height;
-        
+        const barHeight = (dataArray[i] / 255) * height
+
         // Use gradient based on frequency with transparency
-        const hue = i / bufferLength * 360;
-        ctx.fillStyle = isPlaying ? `hsla(${hue}, 70%, 60%, 0.7)` : `rgba(128, 128, 128, 0.3)`;
-        
-        ctx.fillRect(x, height - barHeight, barWidth, barHeight);
-        
-        x += barWidth + 1;
+        const hue = (i / bufferLength) * 360
+        ctx.fillStyle = isPlaying ? `hsla(${hue}, 70%, 60%, 0.7)` : `rgba(128, 128, 128, 0.3)`
+
+        ctx.fillRect(x, height - barHeight, barWidth, barHeight)
+
+        x += barWidth + 1
       }
-    };
-    
-    renderFrame();
-  };
+    }
+
+    renderFrame()
+  }
 
   // Select a specific track
   const selectTrack = (track: Track) => {
-    setCurrentTrack(track);
-    setIsPlaying(true);
-    onClose();
-  };
+    setCurrentTrack(track)
+    setIsPlaying(true)
+    onClose()
+  }
 
   return (
-    <Box 
-      py={1} 
-      px={3} 
-      bg={bgColor} 
-      borderBottom="1px solid" 
+    <Box
+      py={1}
+      px={3}
+      bg={bgColor}
+      borderBottom="1px solid"
       borderColor={borderColor}
       backdropFilter="blur(8px)"
       position="sticky"
@@ -265,28 +297,21 @@ export function MusicPlayer() {
     >
       <Flex justifyContent="space-between" alignItems="center">
         <HStack spacing={2} flex="1">
-          <Box 
-            position="relative" 
-            width="36px" 
-            height="36px" 
-            borderRadius="md" 
-            overflow="hidden"
-            boxShadow="sm"
-          >
-            <Image 
-              src={currentTrack.cover || "/placeholder.svg"} 
+          <Box position="relative" width="36px" height="36px" borderRadius="md" overflow="hidden" boxShadow="sm">
+            <Image
+              src={currentTrack.cover || "/placeholder.svg"}
               alt={currentTrack.title}
               fallbackSrc="/placeholder.svg?height=36&width=36"
               width="100%"
               height="100%"
               objectFit="cover"
             />
-            <Box 
-              position="absolute" 
-              top="0" 
-              left="0" 
-              width="100%" 
-              height="100%" 
+            <Box
+              position="absolute"
+              top="0"
+              left="0"
+              width="100%"
+              height="100%"
               bg="blackAlpha.300"
               display={isPlaying ? "none" : "flex"}
               alignItems="center"
@@ -295,7 +320,7 @@ export function MusicPlayer() {
               <BsFillPlayFill size={18} color="white" />
             </Box>
           </Box>
-          
+
           <VStack spacing={0} alignItems="flex-start" width="120px">
             <Text fontWeight="bold" fontSize="xs" noOfLines={1} color={textColor}>
               {currentTrack.title}
@@ -305,16 +330,16 @@ export function MusicPlayer() {
             </Text>
           </VStack>
         </HStack>
-        
+
         <HStack spacing={2} flex="1" justifyContent="center">
           <IconButton
             aria-label="Previous track"
             icon={<BsSkipBackwardFill />}
             size="xs"
             variant="ghost"
-            onClick={() => changeTrack('prev')}
+            onClick={() => changeTrack("prev")}
           />
-          
+
           <IconButton
             aria-label={isPlaying ? "Pause" : "Play"}
             icon={isPlaying ? <BsFillPauseFill /> : <BsFillPlayFill />}
@@ -323,21 +348,21 @@ export function MusicPlayer() {
             isRound
             onClick={togglePlay}
           />
-          
+
           <IconButton
             aria-label="Next track"
             icon={<BsSkipForwardFill />}
             size="xs"
             variant="ghost"
-            onClick={() => changeTrack('next')}
+            onClick={() => changeTrack("next")}
           />
         </HStack>
-        
+
         <HStack spacing={2} flex="2" justifyContent="flex-end">
           <Text fontSize="2xs" color="gray.500" width="30px" textAlign="right">
             {formatTime(currentTime)}
           </Text>
-          
+
           <Box flex="1" maxWidth="150px">
             <Slider
               aria-label="track-progress"
@@ -354,11 +379,11 @@ export function MusicPlayer() {
               <SliderThumb boxSize={2} />
             </Slider>
           </Box>
-          
+
           <Text fontSize="2xs" color="gray.500" width="30px">
             {formatTime(duration)}
           </Text>
-          
+
           <HStack spacing={1} width="80px">
             <IconButton
               aria-label={isMuted ? "Unmute" : "Mute"}
@@ -367,7 +392,7 @@ export function MusicPlayer() {
               variant="ghost"
               onClick={toggleMute}
             />
-            
+
             <Slider
               aria-label="volume"
               value={isMuted ? 0 : volume}
@@ -385,28 +410,17 @@ export function MusicPlayer() {
               <SliderThumb boxSize={1.5} />
             </Slider>
           </HStack>
-          
+
           <Tooltip label="Playlist">
-            <IconButton
-              aria-label="Playlist"
-              icon={<BsMusicNoteList />}
-              size="xs"
-              variant="ghost"
-              onClick={onOpen}
-            />
+            <IconButton aria-label="Playlist" icon={<BsMusicNoteList />} size="xs" variant="ghost" onClick={onOpen} />
           </Tooltip>
         </HStack>
       </Flex>
-      
+
       <Box mt={1} height="20px">
-        <canvas 
-          ref={canvasRef} 
-          width="1200" 
-          height="20" 
-          style={{ width: '100%', height: '100%' }}
-        />
+        <canvas ref={canvasRef} width="1200" height="20" style={{ width: "100%", height: "100%" }} />
       </Box>
-      
+
       {/* Audio element */}
       <audio
         ref={audioRef}
@@ -415,53 +429,67 @@ export function MusicPlayer() {
         onEnded={handleTrackEnd}
         onLoadedMetadata={handleTimeUpdate}
       />
-      
+
       {/* Playlist drawer */}
       <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
         <DrawerOverlay />
-        <DrawerContent>
+        <DrawerContent bg={useColorModeValue("white", "gray.900")}>
           <DrawerCloseButton />
-          <DrawerHeader borderBottomWidth="1px">
-            Music Playlist
+          <DrawerHeader
+            borderBottomWidth="1px"
+            borderColor={useColorModeValue("gray.200", "gray.700")}
+            bg={useColorModeValue("purple.50", "gray.800")}
+          >
+            <Text color={useColorModeValue("purple.700", "purple.300")}>Music Playlist</Text>
           </DrawerHeader>
-          <DrawerBody>
+          <DrawerBody bg={useColorModeValue("gray.50", "gray.800")}>
             <VStack spacing={2} align="stretch">
               {tracks.map((track) => (
-                <Box 
+                <Box
                   key={track.id}
                   p={2}
                   borderRadius="md"
-                  bg={track.id === currentTrack.id ? 'purple.100' : 'transparent'}
-                  _hover={{ bg: 'gray.100' }}
+                  bg={track.id === currentTrack.id ? useColorModeValue("purple.200", "purple.700") : "transparent"}
+                  _hover={{ bg: useColorModeValue("purple.50", "gray.700") }}
+                  border="1px solid"
+                  borderColor={
+                    track.id === currentTrack.id ? useColorModeValue("purple.300", "purple.600") : "transparent"
+                  }
                   cursor="pointer"
                   onClick={() => selectTrack(track)}
                 >
                   <HStack>
                     <Box position="relative" width="40px" height="40px" borderRadius="md" overflow="hidden">
-                      <Image 
-                        src={track.cover || "/placeholder.svg"} 
+                      <Image
+                        src={track.cover || "/placeholder.svg"}
                         alt={track.title}
                         fallbackSrc="/placeholder.svg?height=40&width=40"
                       />
                       {track.id === currentTrack.id && isPlaying && (
-                        <Box 
-                          position="absolute" 
-                          top="0" 
-                          left="0" 
-                          width="100%" 
-                          height="100%" 
+                        <Box
+                          position="absolute"
+                          top="0"
+                          left="0"
+                          width="100%"
+                          height="100%"
                           bg="blackAlpha.300"
                           display="flex"
                           alignItems="center"
                           justifyContent="center"
                         >
-                          <Badge colorScheme="purple">Playing</Badge>
+                          <Badge colorScheme="purple" bg={useColorModeValue("purple.500", "purple.300")} color="white">
+                            Playing
+                          </Badge>
                         </Box>
                       )}
                     </Box>
                     <VStack spacing={0} alignItems="flex-start">
-                      <Text fontWeight="medium" fontSize="sm">{track.title}</Text>
-                      <Text fontSize="xs" color="gray.500">{track.artist}</Text>
+                      <Text fontWeight="medium" fontSize="sm">
+                        {track.title}
+                      </Text>
+                      <Text fontSize="xs" color="gray.500">
+                        {track.artist}
+                      </Text>
                     </VStack>
                   </HStack>
                 </Box>
@@ -471,5 +499,6 @@ export function MusicPlayer() {
         </DrawerContent>
       </Drawer>
     </Box>
-  );
+  )
 }
+

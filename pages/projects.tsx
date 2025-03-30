@@ -1,6 +1,6 @@
 import { Box, Input, SimpleGrid, Heading, Text, InputGroup, InputLeftElement, Flex, Tag, Badge, Container, VStack, HStack, useColorModeValue, Divider, Alert, AlertIcon } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { Search } from 'react-icons/fa';
+import { FaSearch } from 'react-icons/fa';
 
 import CategoryButton from '@/components/buttons/category-button';
 import ProjectCard from '@/components/cards/project';
@@ -47,7 +47,7 @@ function ProjectDeck({ projects, categories }: ProjectDeckProps) {
             <Box>
               <InputGroup>
                 <InputLeftElement pointerEvents="none">
-                  <Search color="gray.300" />
+                  <FaSearch color="gray.300" />
                 </InputLeftElement>
                 <Input
                   placeholder="Search projects by name or description"

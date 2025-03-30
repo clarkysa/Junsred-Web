@@ -1,4 +1,4 @@
-import { Box, Flex, Text, IconButton, Slider, SliderTrack, SliderFilledTrack, SliderThumb, HStack, VStack, useColorModeValue, Image, Badge, Tooltip, useDisclosure, Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody, DrawerCloseButton, Button } from '@chakra-ui/react';
+import { Box, Flex, Text, IconButton, Slider, SliderTrack, SliderFilledTrack, SliderThumb, HStack, VStack, useColorModeValue, Image, Badge, Tooltip, useDisclosure, Drawer, DrawerOverlay, DrawerContent, DrawerHeader, DrawerBody, DrawerCloseButton } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
 import { BsFillPlayFill, BsFillPauseFill, BsVolumeUp, BsVolumeMute, BsSkipBackwardFill, BsSkipForwardFill, BsMusicNoteList } from 'react-icons/bs';
 
@@ -67,10 +67,11 @@ export function MusicPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   
-  const bgColor = useColorModeValue('white', 'gray.800');
+  // Semi-transparent background
+  const bgColor = useColorModeValue('rgba(255, 255, 255, 0.7)', 'rgba(26, 32, 44, 0.7)');
   const accentColor = useColorModeValue('purple.500', 'purple.300');
   const textColor = useColorModeValue('gray.800', 'white');
-  const borderColor = useColorModeValue('gray.200', 'gray.700');
+  const borderColor = useColorModeValue('rgba(226, 232, 240, 0.5)', 'rgba(74, 85, 104, 0.5)');
   
   // Canvas ref for visualizer
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -230,9 +231,9 @@ export function MusicPlayer() {
       for (let i = 0; i < bufferLength; i++) {
         const barHeight = (dataArray[i] / 255) * height;
         
-        // Use gradient based on frequency
+        // Use gradient based on frequency with transparency
         const hue = i / bufferLength * 360;
-        ctx.fillStyle = isPlaying ? `hsl(${hue}, 70%, 60%)` : `rgba(128, 128, 128, 0.5)`;
+        ctx.fillStyle = isPlaying ? `hsla(${hue}, 70%, 60%, 0.7)` : `rgba(128, 128, 128, 0.3)`;
         
         ctx.fillRect(x, height - barHeight, barWidth, barHeight);
         
@@ -252,27 +253,30 @@ export function MusicPlayer() {
 
   return (
     <Box 
-      py={2} 
-      px={4} 
+      py={1} 
+      px={3} 
       bg={bgColor} 
       borderBottom="1px solid" 
       borderColor={borderColor}
-      boxShadow="sm"
+      backdropFilter="blur(8px)"
+      position="sticky"
+      top="0"
+      zIndex="sticky"
     >
       <Flex justifyContent="space-between" alignItems="center">
-        <HStack spacing={4} flex="1">
+        <HStack spacing={2} flex="1">
           <Box 
             position="relative" 
-            width="50px" 
-            height="50px" 
+            width="36px" 
+            height="36px" 
             borderRadius="md" 
             overflow="hidden"
-            boxShadow="md"
+            boxShadow="sm"
           >
             <Image 
               src={currentTrack.cover || "/placeholder.svg"} 
               alt={currentTrack.title}
-              fallbackSrc="/placeholder.svg?height=50&width=50"
+              fallbackSrc="/placeholder.svg?height=36&width=36"
               width="100%"
               height="100%"
               objectFit="cover"
@@ -288,25 +292,25 @@ export function MusicPlayer() {
               alignItems="center"
               justifyContent="center"
             >
-              <BsFillPlayFill size={24} color="white" />
+              <BsFillPlayFill size={18} color="white" />
             </Box>
           </Box>
           
-          <VStack spacing={0} alignItems="flex-start" width="150px">
-            <Text fontWeight="bold" fontSize="sm" noOfLines={1} color={textColor}>
+          <VStack spacing={0} alignItems="flex-start" width="120px">
+            <Text fontWeight="bold" fontSize="xs" noOfLines={1} color={textColor}>
               {currentTrack.title}
             </Text>
-            <Text fontSize="xs" color="gray.500" noOfLines={1}>
+            <Text fontSize="2xs" color="gray.500" noOfLines={1}>
               {currentTrack.artist}
             </Text>
           </VStack>
         </HStack>
         
-        <HStack spacing={4} flex="2" justifyContent="center">
+        <HStack spacing={2} flex="1" justifyContent="center">
           <IconButton
             aria-label="Previous track"
             icon={<BsSkipBackwardFill />}
-            size="sm"
+            size="xs"
             variant="ghost"
             onClick={() => changeTrack('prev')}
           />
@@ -314,7 +318,7 @@ export function MusicPlayer() {
           <IconButton
             aria-label={isPlaying ? "Pause" : "Play"}
             icon={isPlaying ? <BsFillPauseFill /> : <BsFillPlayFill />}
-            size="md"
+            size="sm"
             colorScheme="purple"
             isRound
             onClick={togglePlay}
@@ -323,18 +327,18 @@ export function MusicPlayer() {
           <IconButton
             aria-label="Next track"
             icon={<BsSkipForwardFill />}
-            size="sm"
+            size="xs"
             variant="ghost"
             onClick={() => changeTrack('next')}
           />
         </HStack>
         
-        <HStack spacing={4} flex="3" justifyContent="flex-end">
-          <Text fontSize="xs" color="gray.500" width="40px" textAlign="right">
+        <HStack spacing={2} flex="2" justifyContent="flex-end">
+          <Text fontSize="2xs" color="gray.500" width="30px" textAlign="right">
             {formatTime(currentTime)}
           </Text>
           
-          <Box flex="1" maxWidth="200px">
+          <Box flex="1" maxWidth="150px">
             <Slider
               aria-label="track-progress"
               value={currentTime}
@@ -342,23 +346,24 @@ export function MusicPlayer() {
               max={duration || 100}
               onChange={handleSeek}
               colorScheme="purple"
+              size="sm"
             >
               <SliderTrack>
                 <SliderFilledTrack />
               </SliderTrack>
-              <SliderThumb boxSize={3} />
+              <SliderThumb boxSize={2} />
             </Slider>
           </Box>
           
-          <Text fontSize="xs" color="gray.500" width="40px">
+          <Text fontSize="2xs" color="gray.500" width="30px">
             {formatTime(duration)}
           </Text>
           
-          <HStack spacing={2} width="100px">
+          <HStack spacing={1} width="80px">
             <IconButton
               aria-label={isMuted ? "Unmute" : "Mute"}
               icon={isMuted ? <BsVolumeMute /> : <BsVolumeUp />}
-              size="sm"
+              size="xs"
               variant="ghost"
               onClick={toggleMute}
             />
@@ -371,12 +376,13 @@ export function MusicPlayer() {
               step={0.01}
               onChange={handleVolumeChange}
               colorScheme="purple"
-              width="60px"
+              width="50px"
+              size="sm"
             >
               <SliderTrack>
                 <SliderFilledTrack />
               </SliderTrack>
-              <SliderThumb boxSize={2} />
+              <SliderThumb boxSize={1.5} />
             </Slider>
           </HStack>
           
@@ -384,7 +390,7 @@ export function MusicPlayer() {
             <IconButton
               aria-label="Playlist"
               icon={<BsMusicNoteList />}
-              size="sm"
+              size="xs"
               variant="ghost"
               onClick={onOpen}
             />
@@ -392,11 +398,11 @@ export function MusicPlayer() {
         </HStack>
       </Flex>
       
-      <Box mt={2} height="30px">
+      <Box mt={1} height="20px">
         <canvas 
           ref={canvasRef} 
           width="1200" 
-          height="30" 
+          height="20" 
           style={{ width: '100%', height: '100%' }}
         />
       </Box>

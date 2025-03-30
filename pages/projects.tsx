@@ -85,7 +85,7 @@ function ProjectDeck({ projects, categories }: ProjectDeckProps) {
             <HStack>
               <Badge colorScheme="purple">{filteredProjects.length} projects</Badge>
               {searchTerm && (
-                <Badge colorScheme="blue">Search: "{searchTerm}"</Badge>
+                <Badge colorScheme="blue">Search: {`"${searchTerm}"`}</Badge>
               )}
               {selected !== 'All' && (
                 <Badge colorScheme="green">Category: {selected}</Badge>

@@ -49,7 +49,7 @@ const tracks: Track[] = [
     id: 1,
     title: "稲葉曇余裕欲Vo. nagiβ & カゼヒキβ",
     artist: "稲葉曇",
-    src: "/music/稲葉曇余裕欲Vo. nagiβ & カゼヒキβ.mp3",
+    src: "/music/track1.mp3",
     cover: "/music/covers/track1.jpg",
   },
   {

@@ -23,7 +23,7 @@ import {
   DrawerBody,
   DrawerCloseButton,
 } from "@chakra-ui/react"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import {
   BsFillPlayFill,
   BsFillPauseFill,
@@ -105,12 +105,63 @@ export function MusicPlayer() {
   const textColor = useColorModeValue("gray.800", "white")
   const borderColor = useColorModeValue("rgba(226, 232, 240, 0.5)", "rgba(74, 85, 104, 0.5)")
 
+  const drawerBg = useColorModeValue("white", "gray.900")
+  const drawerHeaderBg = useColorModeValue("purple.50", "gray.800")
+  const drawerHeaderColor = useColorModeValue("purple.700", "purple.300")
+  const drawerBodyBg = useColorModeValue("gray.50", "gray.800")
+  const drawerHeaderBorderColor = useColorModeValue("gray.200", "gray.700")
+  const selectedTrackBg = useColorModeValue("purple.200", "purple.700")
+  const hoverTrackBg = useColorModeValue("purple.50", "gray.700")
+  const badgeBg = useColorModeValue("purple.500", "purple.300")
+  const selectedTrackBorderColor = useColorModeValue("purple.300", "purple.600")
+
   // Canvas ref for visualizer
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const animationRef = useRef<number | null>(null)
   const analyzerRef = useRef<AnalyserNode | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null)
+
+  // Visualizer function
+  const startVisualizer = useCallback(() => {
+    if (!canvasRef.current || !analyzerRef.current) return
+
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    const analyzer = analyzerRef.current
+    const bufferLength = analyzer.frequencyBinCount
+    const dataArray = new Uint8Array(bufferLength)
+
+    const width = canvas.width
+    const height = canvas.height
+
+    const renderFrame = () => {
+      animationRef.current = requestAnimationFrame(renderFrame)
+
+      analyzer.getByteFrequencyData(dataArray)
+
+      ctx.clearRect(0, 0, width, height)
+
+      const barWidth = (width / bufferLength) * 2.5
+      let x = 0
+
+      for (let i = 0; i < bufferLength; i++) {
+        const barHeight = (dataArray[i] / 255) * height
+
+        // Use gradient based on frequency with transparency
+        const hue = (i / bufferLength) * 360
+        ctx.fillStyle = isPlaying ? `hsla(${hue}, 70%, 60%, 0.7)` : `rgba(128, 128, 128, 0.3)`
+
+        ctx.fillRect(x, height - barHeight, barWidth, barHeight)
+
+        x += barWidth + 1
+      }
+    }
+
+    renderFrame()
+  }, [isPlaying])
 
   // Initialize audio on component mount
   useEffect(() => {
@@ -144,7 +195,7 @@ export function MusicPlayer() {
         audioContextRef.current.close()
       }
     }
-  }, [])
+  }, [volume, startVisualizer])
 
   // Update audio element when track changes
   useEffect(() => {
@@ -153,7 +204,7 @@ export function MusicPlayer() {
         audioRef.current.play()
       }
     }
-  }, [currentTrack])
+  }, [currentTrack, isPlaying])
 
   // Format time in MM:SS
   const formatTime = (time: number) => {
@@ -233,47 +284,6 @@ export function MusicPlayer() {
   // Handle track end
   const handleTrackEnd = () => {
     changeTrack("next")
-  }
-
-  // Visualizer function
-  const startVisualizer = () => {
-    if (!canvasRef.current || !analyzerRef.current) return
-
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
-
-    const analyzer = analyzerRef.current
-    const bufferLength = analyzer.frequencyBinCount
-    const dataArray = new Uint8Array(bufferLength)
-
-    const width = canvas.width
-    const height = canvas.height
-
-    const renderFrame = () => {
-      animationRef.current = requestAnimationFrame(renderFrame)
-
-      analyzer.getByteFrequencyData(dataArray)
-
-      ctx.clearRect(0, 0, width, height)
-
-      const barWidth = (width / bufferLength) * 2.5
-      let x = 0
-
-      for (let i = 0; i < bufferLength; i++) {
-        const barHeight = (dataArray[i] / 255) * height
-
-        // Use gradient based on frequency with transparency
-        const hue = (i / bufferLength) * 360
-        ctx.fillStyle = isPlaying ? `hsla(${hue}, 70%, 60%, 0.7)` : `rgba(128, 128, 128, 0.3)`
-
-        ctx.fillRect(x, height - barHeight, barWidth, barHeight)
-
-        x += barWidth + 1
-      }
-    }
-
-    renderFrame()
   }
 
   // Select a specific track
@@ -433,28 +443,22 @@ export function MusicPlayer() {
       {/* Playlist drawer */}
       <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
         <DrawerOverlay />
-        <DrawerContent bg={useColorModeValue("white", "gray.900")}>
+        <DrawerContent bg={drawerBg}>
           <DrawerCloseButton />
-          <DrawerHeader
-            borderBottomWidth="1px"
-            borderColor={useColorModeValue("gray.200", "gray.700")}
-            bg={useColorModeValue("purple.50", "gray.800")}
-          >
-            <Text color={useColorModeValue("purple.700", "purple.300")}>Music Playlist</Text>
+          <DrawerHeader borderBottomWidth="1px" borderColor={drawerHeaderBorderColor} bg={drawerHeaderBg}>
+            <Text color={drawerHeaderColor}>Music Playlist</Text>
           </DrawerHeader>
-          <DrawerBody bg={useColorModeValue("gray.50", "gray.800")}>
+          <DrawerBody bg={drawerBodyBg}>
             <VStack spacing={2} align="stretch">
               {tracks.map((track) => (
                 <Box
                   key={track.id}
                   p={2}
                   borderRadius="md"
-                  bg={track.id === currentTrack.id ? useColorModeValue("purple.200", "purple.700") : "transparent"}
-                  _hover={{ bg: useColorModeValue("purple.50", "gray.700") }}
+                  bg={track.id === currentTrack.id ? selectedTrackBg : "transparent"}
+                  _hover={{ bg: hoverTrackBg }}
                   border="1px solid"
-                  borderColor={
-                    track.id === currentTrack.id ? useColorModeValue("purple.300", "purple.600") : "transparent"
-                  }
+                  borderColor={track.id === currentTrack.id ? selectedTrackBorderColor : "transparent"}
                   cursor="pointer"
                   onClick={() => selectTrack(track)}
                 >
@@ -477,7 +481,7 @@ export function MusicPlayer() {
                           alignItems="center"
                           justifyContent="center"
                         >
-                          <Badge colorScheme="purple" bg={useColorModeValue("purple.500", "purple.300")} color="white">
+                          <Badge colorScheme="purple" bg={badgeBg} color="white">
                             Playing
                           </Badge>
                         </Box>

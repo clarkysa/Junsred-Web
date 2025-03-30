@@ -43,13 +43,13 @@ interface Track {
   cover: string
 }
 
-// Sample tracks - replace with your actual tracks
+// Actualiza el array de tracks con las rutas correctas
 const tracks: Track[] = [
   {
     id: 1,
-    title: "稲葉曇余裕欲Vo. nagiβ & カゼヒキβ",
-    artist: "稲葉曇",
-    src: "/music/track1.mp3",
+    title: "Chill Vibes",
+    artist: "LoFi Producer",
+    src: "/music/track1.mp3", // Esta ruta apunta a public/music/track1.mp3
     cover: "/music/covers/track1.jpg",
   },
   {
@@ -168,22 +168,32 @@ export function MusicPlayer() {
     if (audioRef.current) {
       audioRef.current.volume = volume
 
-      // Setup audio context for visualizer
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-      audioContextRef.current = audioContext
+      try {
+        // Setup audio context for visualizer
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext
+        if (!AudioContext) {
+          console.error("AudioContext not supported in this browser")
+          return
+        }
 
-      const analyzer = audioContext.createAnalyser()
-      analyzer.fftSize = 256
-      analyzerRef.current = analyzer
+        const audioContext = new AudioContext()
+        audioContextRef.current = audioContext
 
-      const source = audioContext.createMediaElementSource(audioRef.current)
-      source.connect(analyzer)
-      analyzer.connect(audioContext.destination)
-      sourceRef.current = source
+        const analyzer = audioContext.createAnalyser()
+        analyzer.fftSize = 256
+        analyzerRef.current = analyzer
 
-      // Start visualizer
-      if (canvasRef.current) {
-        startVisualizer()
+        const source = audioContext.createMediaElementSource(audioRef.current)
+        source.connect(analyzer)
+        analyzer.connect(audioContext.destination)
+        sourceRef.current = source
+
+        // Start visualizer
+        if (canvasRef.current) {
+          startVisualizer()
+        }
+      } catch (error) {
+        console.error("Error setting up audio context:", error)
       }
     }
 
@@ -192,7 +202,7 @@ export function MusicPlayer() {
         cancelAnimationFrame(animationRef.current)
       }
       if (audioContextRef.current) {
-        audioContextRef.current.close()
+        audioContextRef.current.close().catch((e) => console.error("Error closing audio context:", e))
       }
     }
   }, [volume, startVisualizer])
@@ -218,10 +228,26 @@ export function MusicPlayer() {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause()
+        console.log("Pausing audio")
       } else {
-        audioRef.current.play()
+        // Intenta reproducir y captura cualquier error
+        audioRef.current
+          .play()
+          .then(() => {
+            console.log("Audio playing successfully")
+          })
+          .catch((error) => {
+            console.error("Error playing audio:", error)
+            // Intenta cargar de nuevo el audio
+            audioRef.current.load()
+            setTimeout(() => {
+              audioRef.current.play().catch((e) => console.error("Second attempt failed:", e))
+            }, 100)
+          })
       }
       setIsPlaying(!isPlaying)
+    } else {
+      console.error("Audio reference is not available")
     }
   }
 
@@ -292,6 +318,24 @@ export function MusicPlayer() {
     setIsPlaying(true)
     onClose()
   }
+
+  // Verificar que los archivos de audio existen
+  useEffect(() => {
+    console.log("Current track path:", currentTrack.src)
+
+    // Intenta cargar el archivo para ver si existe
+    fetch(currentTrack.src)
+      .then((response) => {
+        if (!response.ok) {
+          console.error(`Error loading audio file: ${response.status} ${response.statusText}`)
+        } else {
+          console.log("Audio file exists and is accessible")
+        }
+      })
+      .catch((error) => {
+        console.error("Error checking audio file:", error)
+      })
+  }, [currentTrack.src])
 
   return (
     <Box
@@ -438,6 +482,8 @@ export function MusicPlayer() {
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleTrackEnd}
         onLoadedMetadata={handleTimeUpdate}
+        onError={(e) => console.error("Audio error:", e)}
+        preload="auto"
       />
 
       {/* Playlist drawer */}

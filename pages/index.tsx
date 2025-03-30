@@ -1,7 +1,7 @@
 import { Box, Container, Heading, Text, VStack, HStack, Icon, Divider, useColorModeValue } from '@chakra-ui/react';
+import { BiDrink } from 'react-icons/bi';
 import { FaJava, FaJs, FaLock, FaBook, FaLaptopCode, FaGamepad, FaHeart } from 'react-icons/fa';
 import { GiCoffeeCup, GiCupcake, GiIceCreamCone } from 'react-icons/gi';
-import { BiDrink } from 'react-icons/bi';
 
 import PresentationCard from '../components/cards/presentation';
 
